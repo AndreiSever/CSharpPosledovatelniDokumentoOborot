@@ -1,0 +1,54 @@
+﻿@page
+@model StudentAssignments.Web.Pages.Admin.Users.DetailsModel
+
+@{
+    ViewData["Title"] = "Данные пользователя";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserEntity.UserName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserEntity.UserName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserEntity.UserRoles)
+        </dt>
+        <dd class="col-sm-10">
+            @string.Join(", ", Model.UserEntity.UserRoles.Select(ur => ur.Role.Name))
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserEntity.LastName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserEntity.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserEntity.FirstName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserEntity.FirstName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserEntity.MiddleName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserEntity.MiddleName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.UserEntity.Group)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.UserEntity.Group.Name)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.UserEntity.Id">Редактировать</a> |
+    <a asp-page="./Delete" asp-route-id="@Model.UserEntity.Id">Удалить</a>
+</div>

@@ -1,0 +1,63 @@
+﻿@page
+@inject StudentAssignments.Web.Services.UserService UserService
+@model StudentAssignments.Web.Pages.Admin.Groups.EditModel
+
+@{
+    ViewData["Title"] = "Редактирование группы";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Input.Id" />
+            <div class="form-group">
+                <label asp-for="Input.Name" class="control-label"></label>
+                <input asp-for="Input.Name" class="form-control" />
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Input.AssignmentsAllowed" /> @Html.DisplayNameFor(model => model.Input.AssignmentsAllowed)
+                </label>
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="form-group">
+                <label class="control-label">Состав:</label>
+                <div class="input-group mb-3">
+                    <select id="user-select" asp-items="@UserService.ListUsers().Select(u => new SelectListItem() { Text = u.FullName, Value = u.Id.ToString() })" class="form-control">
+                        <option value="">-</option>
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="add-user-btn">Добавить</button>
+                    </div>
+                </div>
+                <ul class="list-group" id="users-list">
+                    @for (int i = 0; i < Model.Input.Users.Length; i++)
+                    {
+                        var user = Model.Input.Users[i];
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><a asp-page="../Users/Details" asp-route-id="@user.Id">@user.FullName</a></span>
+                            <a href="#" class="del-user-btn">Удалить</a>
+                            <input type="hidden" asp-for="@Model.Input.Users[i].Id" class="user-id-input" />
+                            <input type="hidden" asp-for="@Model.Input.Users[i].FullName" />
+                            <input type="hidden" asp-for="@Model.Input.Users[i].IsRemoved" class="user-removed-input" />
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/groups/edit.js" asp-append-version="true"></script>
+}

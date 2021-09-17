@@ -1,0 +1,99 @@
+﻿@page
+@inject StudentAssignments.Web.Services.GroupService GroupService
+@inject StudentAssignments.Web.Services.UserService UserService
+@model StudentAssignments.Web.Pages.Assignment.CreateModel
+
+@{
+    ViewData["Title"] = "Создание задания";
+    if (Model.Templates != null)
+    {
+        ViewData["Subtitle"] = "Выберите шаблон";
+    }
+    else
+    {
+        ViewData["Subtitle"] = "Укажите название и исполнителей";
+    }
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>@ViewData["Subtitle"]</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        @if (Model.Templates != null)
+        {
+            foreach (var template in Model.Templates)
+            {
+                <p><a asp-page="Create" asp-route-templateid="@template.Id">@template.Name</a></p>
+            }
+        }
+        else
+        {
+            <form method="post">
+                <input type="hidden" asp-for="Input.TemplateId" />
+                <div class="form-group">
+                    <label asp-for="Input.Title"></label>
+                    <input asp-for="Input.Title" class="form-control" />
+                    <span asp-validation-for="Input.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Desctiption"></label>
+                    <textarea asp-for="Input.Desctiption" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Input.Desctiption" class="text-danger"></span>
+                </div>
+                @for (int i = 0; i < Model.Input.Stages.Length; i++)
+                {
+                    <div class="form-group">
+                        <input type="hidden" asp-for="@Model.Input.Stages[i].StageName" />
+                        <label class="control-label">@Model.Input.Stages[i].StageName</label>
+                        <div class="form-row">
+                            <div class="col">
+                                <select asp-items="@GroupService.ListGroups().Select(g => new SelectListItem() { Text = g.Name, Value = g.Id.ToString() })" class="form-control group-select">
+                                    <option value="">-</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <select asp-for="@Model.Input.Stages[i].UserId" class="form-control user-select">
+                                    <option value="">-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <span asp-validation-for="@Model.Input.Stages[i].UserId" class="text-danger"></span>
+                    </div>
+                }
+                <div class="form-group">
+                    <input type="submit" value="Создать" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('.group-select').select2();
+            $('.group-select').on('change.select2', function (e) {
+                var groupId = $(this).val();
+                //console.log('changed:', groupId);
+                $userSelect = $(this).closest('.form-group').find('.user-select');
+                $userSelect.find('option').remove();
+                $userSelect.append(new Option('-', '', false, false));
+                if (groupId) {
+                    var url = '/handlers?handler=getusers&groupid=' + groupId;
+                    $.get(url, function( data ) {
+                        for (var i = 0; i < data.results.length; i++) {
+                            var item = data.results[i];
+                            var newOption = new Option(item.text, item.id, false, false);
+                            $userSelect.append(newOption);
+                        }
+                        $userSelect.trigger('change');
+                    });
+                }
+            });
+            $('.user-select').select2();
+        });
+    </script>
+}

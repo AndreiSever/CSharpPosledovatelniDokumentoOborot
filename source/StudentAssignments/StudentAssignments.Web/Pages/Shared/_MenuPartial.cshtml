@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using StudentAssignments.Web.Model
+@inject SignInManager<User> SignInManager
+
+<ul class="navbar-nav mr-auto"> 
+    @if (SignInManager.IsSignedIn(User))
+    {
+        var user = await SignInManager.UserManager.GetUserAsync(User);
+        if (await SignInManager.UserManager.IsInRoleAsync(user, "User"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Assignment/My">Входящие задания</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Assignment/Index">Выданные задания</a>
+            </li>
+        }
+        if (await SignInManager.UserManager.IsInRoleAsync(user, "Admin"))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Администрирование
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" asp-page="/Admin/Users/Index">Пользователи</a>
+                    <a class="dropdown-item" asp-page="/Admin/Groups/Index">Группы</a>
+                    <a class="dropdown-item" href="/Admin/Templates/Index">Шаблоны</a>
+                </div>
+            </li>
+        }
+    }
+</ul>

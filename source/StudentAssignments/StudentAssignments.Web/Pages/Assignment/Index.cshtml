@@ -1,0 +1,38 @@
+﻿@page
+@model StudentAssignments.Web.Pages.Assignment.IndexModel
+
+@{
+    ViewData["Title"] = "Выданные задания";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model.CanCreate)
+{
+    <p>
+        <a asp-page="Create">Создать задание</a>
+    </p>
+}
+
+<ul class="list-group">
+    @foreach (var workflow in Model.Workflows)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <div class="mb-2" title="@workflow.TemplateName"><a asp-page="Details" asp-route-id="@workflow.Id">@workflow.Title</a></div>
+                @foreach (var stage in workflow.Stages)
+                {
+                    <span title="@stage.Title" class="px-2 border border-secondary rounded@(@stage.IsLate ? " bg-danger text-white" : "")">
+                        @*<small>@(stage.IsCurrent ? "⯈ " : "")@stage.AssigneeName</small></span>*@
+                        <small>@if (stage.IsCurrent) { <i class="fas fa-caret-right"></i> }@stage.AssigneeName</small></span>
+                }
+                @if (workflow.Grade.HasValue)
+                {
+                    <span class="ml-2"><small>ОЦЕНКА: </small><strong>@workflow.Grade</strong></span>
+                }
+            </div>
+            <div><a asp-page="Delete" asp-route-id="@workflow.Id">Удалить</a></div>
+        </li>
+    }
+</ul>
+

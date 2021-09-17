@@ -1,0 +1,18 @@
+﻿@page
+@model StudentAssignments.Web.Pages.Assignment.MyModel
+
+@{
+    ViewData["Title"] = "Входящие задания";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<ul class="list-group">
+    @foreach (var workflow in Model.Workflows)
+    {
+        <li class="list-group-item">
+            <div title="@workflow.TemplateName"><a asp-page="./Submit" asp-route-id="@workflow.Id">@workflow.Title</a></div>
+            <div>@workflow.CurrentStage.Title</div>
+        </li>
+    }
+</ul>

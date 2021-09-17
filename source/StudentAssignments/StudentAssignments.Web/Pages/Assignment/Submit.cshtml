@@ -1,0 +1,114 @@
+﻿@page
+@model StudentAssignments.Web.Pages.Assignment.SubmitModel
+
+@{
+    ViewData["Title"] = "Входящее задание";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row mb-3">
+    <div class="col-12">
+        <h4>@Model.Input.Workflow.Title</h4>
+        @if (Model.Input.Workflow.Description != null)
+        {
+            <a data-toggle="collapse" href="#description" role="button" aria-expanded="false" aria-controls="description" class="p-3 stage-task-description">
+                <small>ОПИСАНИЕ ЗАДАНИЯ</small>
+                <div class="collapse" id="description">
+                    <hr />
+                    <p class="lead" style="white-space: pre-line;">@Model.Input.Workflow.Description</p>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="m-0">@Model.Input.Stage.Title</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="stage-submit-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Input.Workflow.Id" />
+                    <input type="hidden" asp-for="Input.Workflow.TemplateName" />
+                    <input type="hidden" asp-for="Input.Workflow.Title" />
+                    <input type="hidden" asp-for="Input.Workflow.Description" />
+                    <input type="hidden" asp-for="Input.Stage.Id" />
+                    <input type="hidden" asp-for="Input.Stage.Title" />
+                    <input type="hidden" asp-for="Input.Stage.CanReject" />
+                    <input type="hidden" asp-for="Input.Stage.IsFinal" />
+                    <input type="hidden" asp-for="Input.IsRejected" id="isrejected-input" value="False" />
+                    @if (Model.Input.InputDocuments != null && Model.Input.InputDocuments.Count > 0)
+                    {
+                        @*<h6>Входные документы:</h6>*@
+                        @for (int i = 0; i < Model.Input.InputDocuments.Count; i++)
+                        {
+                            var doc = Model.Input.InputDocuments[i];
+                            <input type="hidden" asp-for="Input.InputDocuments[i].Id" />
+                            <input type="hidden" asp-for="Input.InputDocuments[i].Title" />
+                            <input type="hidden" asp-for="Input.InputDocuments[i].TextContent" />
+                            <input type="hidden" asp-for="Input.InputDocuments[i].BinaryContentLink" />
+                            <input type="hidden" asp-for="Input.InputDocuments[i].BinaryContentFilename" />
+                            <div class="form-group">
+                                <label class="control-label">@doc.Title</label>
+                                @if (doc.TextContent != null)
+                                {
+                                    <div><span class="stage-indoc">@doc.TextContent</span></div>
+                                }
+                                else if (doc.BinaryContentLink != null)
+                                {
+                                    <div><span class="stage-indoc"><a href="@doc.BinaryContentLink">@doc.BinaryContentFilename <i class="fas fa-download"></i></a></span></div>
+                                }
+                            </div>
+                        }
+                    }
+                    @if (Model.Input.OutputDocuments != null && Model.Input.OutputDocuments.Count > 0)
+                    {
+                        @*<h6>Выходные документы:</h6>*@
+                        @for (int i = 0; i < Model.Input.OutputDocuments.Count; i++)
+                        {
+                            var doc = Model.Input.OutputDocuments[i];
+                            <input type="hidden" asp-for="Input.OutputDocuments[i].Id" />
+                            <input type="hidden" asp-for="Input.OutputDocuments[i].Title" />
+                            <input type="hidden" asp-for="Input.OutputDocuments[i].Type" />
+                            <input type="hidden" asp-for="Input.OutputDocuments[i].Key" />
+                            <div class="form-group">
+                                <label for="@doc.Key" class="control-label">@doc.Title</label>
+                                @if (doc.Type == Constants.DocumentType.Text)
+                                {
+                                    <input name="@doc.Key" type="text" class="form-control" value="@doc.TextContent" />
+                                }
+                                else if (doc.Type == Constants.DocumentType.File)
+                                {
+                                    <input name="@doc.Key" type="file" class="form-control-file" />
+                                }
+                            </div>
+                        }
+                    }
+                    @if (false || Model.Input.Stage.IsFinal)
+                    {
+                        <div class="form-group">
+                            <label asp-for="Input.Grade" class="control-label"></label>
+                            <input asp-for="Input.Grade" class="form-control w-25" />
+                        </div>
+                    }
+                    @*<div class="form-group">*@
+                        @if (false || Model.Input.Stage.CanReject)
+                        {
+                            <button type="button" class="btn btn-secondary" id="reject-btn">Возврат</button>
+                        }
+                        <input type="submit" value="Готово" class="btn btn-primary" />
+                    @*</div>*@
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/assignment/submit.js" asp-append-version="true"></script>
+}
